@@ -12,6 +12,12 @@ dta.files <- list.files("~/Data/Immigrant_Occupations/for_analysis/")
 dta.files.yr<- dta.files[str_detect(dta.files, "-") == TRUE & str_detect(dta.files, "JUN2025_acs") == TRUE ]
 yr_tabs <- list()
 
+# Identify the occupations we care about
+# We only look to model this for the 405 occupations that are continuously reported
+# Pull clean occupation data
+
+occs <- readRDS("~/Data/Immigrant_Occupations/for_analysis/clean_occupations.rds") 
+cont_occs <- occs %>% group_by(OCC2010) %>% summarize(n_row = n_distinct(year))%>%filter(n_row==6)%>% pull(OCC2010)
 
 # For each group of five years, produce each of the following summary statistics 
 
@@ -23,6 +29,7 @@ for(i in 1:length(dta.files.yr)){
   dta.mig <- dta%>%
     filter(EMPSTAT == 1) %>%
     filter(AGE>= 25 & AGE <= 54)%>%
+    filter(OCC2010 %in% cont_occs) %>%
     mutate(AGE = AGE - mean(AGE)
            , YRS_USA = YEAR-YRIMMIG
            , FEMALE = ifelse(SEX ==2, 1, 0 )
@@ -58,6 +65,5 @@ for(i in 1:length(vec)){
   write_rds(mig, paste0("~/Data/Immigrant_Occupations/for_analysis/SEPT2025_MIG_worker_controls_", vec[i], ".rds"))
   write_rds(nat, paste0("~/Data/Immigrant_Occupations/for_analysis/SEPT2025_NAT_worker_controls_", vec[i], ".rds"))
 }
-
 
 # End file
