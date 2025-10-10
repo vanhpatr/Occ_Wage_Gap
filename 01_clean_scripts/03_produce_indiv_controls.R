@@ -66,4 +66,8 @@ for(i in 1:length(vec)){
   write_rds(nat, paste0("~/Data/Immigrant_Occupations/for_analysis/SEPT2025_NAT_worker_controls_", vec[i], ".rds"))
 }
 
+
+# Write file for occs, final sample
+write_rds(occs[occs$OCC2010 %in% cont_occs, ], "~/Data/Immigrant_Occupations/for_analysis/SEPT2025_CONTINUOUS_OCC_CONTROLS.rds")
+
 # End file
