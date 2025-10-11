@@ -4,7 +4,9 @@
 
 # Load libraries
 library(tidyverse)
+library(haven)
 
+filter <- dplyr::filter
 # Load data
 dta.files <- list.files("~/Data/Immigrant_Occupations/for_analysis/")
 
@@ -17,7 +19,10 @@ yr_tabs <- list()
 # Pull clean occupation data
 
 occs <- readRDS("~/Data/Immigrant_Occupations/for_analysis/clean_occupations.rds") 
-cont_occs <- occs %>% group_by(OCC2010) %>% summarize(n_row = n_distinct(year))%>%filter(n_row==6)%>% pull(OCC2010)
+cont_occs <- occs %>% 
+  group_by(OCC2010) %>%
+  summarize(n_row = n_distinct(year))%>%
+  filter(n_row==6)%>% pull(OCC2010)
 
 # For each group of five years, produce each of the following summary statistics 
 
@@ -26,11 +31,11 @@ for(i in 1:length(dta.files.yr)){
   dta <- read_rds(paste0("~/Data/Immigrant_Occupations/for_analysis/"
                          , dta.files.yr[i]))
   tot <- sum(dta$PERWT)
-  dta.mig <- dta%>%
+  dta.mig <- dta %>%
     filter(EMPSTAT == 1) %>%
     filter(AGE>= 25 & AGE <= 54)%>%
     filter(OCC2010 %in% cont_occs) %>%
-    mutate(AGE = AGE - mean(AGE)
+    mutate(AGE.dev = AGE - mean(dta$AGE, na.rm = TRUE)
            , YRS_USA = YEAR-YRIMMIG
            , FEMALE = ifelse(SEX ==2, 1, 0 )
            , RACE = case_when(HISPAN == 2  ~ "Hispanic"
@@ -44,7 +49,7 @@ for(i in 1:length(dta.files.yr)){
                                            ,"Some college","College or above"))
            , SELFEMP = ifelse(CLASSWKR == 1, 1, 0)) %>%
     
-    select(YEAR.5, PERWT, AGE, FEMALE, RACE, EDUC.sh,  SELFEMP, YRS_USA,
+    select(YEAR.5, PERWT, OCC2010 ,AGE.dev, FEMALE, RACE, EDUC.sh,  SELFEMP, YRS_USA,
            ,IS_IMMIGRANT, YEAR.5,  INCWAGE)
  
    yr_tabs[[i]] <- dta.mig 
