@@ -1,0 +1,307 @@
+---
+title: "Memo"
+author: "Patricia van Hissenhoven"
+date: "2026-07-13"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(kableExtra)
+library(scales)
+source("~/Desktop/Occ_Wage_Gap/Paper/analysis_scripts/03_Analysis_And_Figures.R")
+```
+
+
+## Introduction 
+
+This memo includes all of the figures and relevant descriptions. It does not include any content specific to the paper, but rather can be used as a supplementary file to write the paper and identify the figures to prioritize. 
+
+
+## General trends
+
+This graph shows the trend in average wage estimated using the occupation average wage and the worker average. Previous versions showed a faster narrowing of the gap in the occupation average, but it was a coding mistake. Using this graph I define four periods of analysis: 2001 to 2006 (before the recession), 2007 to 2011 (around the recession), 2012 to 2019 (fast growth period), and 2020 to 2023 (COVID and the aftermath). 
+
+```{r}
+fig.1
+```
+
+
+This graph shows the wage ratio of native average wage to the immigrant average wage over time. The blue dotted line is wage parity (a wage ratio of 1). It shows that natives had a wage advantage of about 15% increasing to close to 20% and then declining between 2008 (but more rapidly since 2012), to a low of around 5% that has remained consistent even through COVID. 
+
+```{r}
+fig.2
+```
+
+
+## Labor-market level figures
+
+I revisited the early memos and early analysis we worked on. We had moved away from the four-component decomposition because it made interpreting which nativity group was "winning" or "losing" very difficult. (E.g., it was difficult to know if a decline in occupational segregation was the result of more natives moving into lower paid jobs or foreign born workers moving into higher paid jobs). However, that decomposition provides interesting insights into the general state of the US job market. 
+
+To recap, this decomposition looks at the change in the wage gap over time. Thus, a ~\$320 decline in the graph below for the period between 2001 and 2006 should be interpreted as the decline in the wage gap between 2001 and 2006. So, these graphs do not show what the wage for natives or immigrant workers was in 2001 or 2006. It doesn't show the wage gap in 2001 or 2006. Hypothetically, the wage gap may have gone from \$1,320 in 2001 to \$1,000 in 2006, or from \$5,600 in 2001 to \$5,280 in 2006 and the graph would be the same. Component 1 refers to the change in occupational segregation (i.e., the within-nativity change in occupational reallocation). Component 2 refers to the change within occupation in wage gap by nativity group. Component 3 is the change in the overall size of occupations (if higher-paying occupations grew across all nativity groups). Component 4 is the change in the overall wages of occupations. Delta is the sum of the 4 components. 
+
+
+Over the entire period, the wage gap changed by \$`r round(four_part_decomp_all$Delta,2)`. That decline is decomposed into the four components as shown below. Changes in occupational segregation account for `r  round(four_part_decomp_all$C1pct*100, 1)`% of the decline and within-occupation wage inequality for `r round(four_part_decomp_all$C2pct*100,1)`.
+
+
+```{r}
+fig.7
+```
+
+The next two graphs look at the decomposition by period. It shows that most of the C2 component growth occurred during the 2012 to 2019 period, but the occupational desegregation story has accounted for most of the change. The graph below looks at the dollar-contribution amounts of each component (and the overall Delta). 
+
+```{r}
+fig.5
+```
+
+The graph below looks at the percentage of the gap reduction explained by each component. The bars add up to 100%
+
+```{r}
+fig.6
+```
+
+
+
+
+
+
+
+
+## Nativity growth trends
+
+This section uses the analysis of the three-component decomposition we pivoted to later. This analysis decomposes the wage growth of each nativity group into three components: C1: an occupational reallocation component, C2: a wage growth component, and C3: an interaction term.  
+
+These are the waterfall plots of the wage growth by of the yearly wage growth by nativity group. 
+
+```{r}
+fig.3
+fig.4
+```
+
+The graphs above show that the two components worth understanding are C1 and C2. These components are used in coordinate planes to situate whether the growth was in the same direction and in the same magnitude across nativity status. 
+
+A positive C1 component means that people from that nativity group entered the occupation. A negative C1 component means that people left the occupation. A positive C2 component means that the wages in that occupation grew, and a negative C2 component means that the wages in that occupation declined. First, I made a 4 by 4 table, where the rows correspond to the experiences of immigrant workers, and the columns to the experiences of native workers. If growth were explained by macroeconomic trends alone (that is the growth and shrinkage of occupations and their wages, regardless of nativity status), we would expect all occupations to fall on the diagonal. But, we see interesting variation in the off-diagonals. 
+
+
+The position of the off-diagonals can be thought of in terms of relative advantage. In the table below, reading the first row across, 48 occupations had entries and wage growth for both natives and foreign born workers. But, in the off-diagonal, we see that in 15 occupations, foreign born workers had entries and higher wages while natives had exits but higher wages. In 34 occupations, foreign born workers had entries and higher wages, while natives had entries but wage decline, and for 19 occupations foreign born workers had entries and higher wages while native workers had exits and declines in wages. Continuing to follow the area above the diagonal, it reflects occupations where foreign born workers had relative advantage compared to native workers (either more benefits or fewer losses), and the area below the diagonal shows occupations where natives secured relative advantage in relation to foreign born workers. 
+
+
+```{r}
+
+colnames(tab.1) <- colnames(tab.1) %>%
+  str_wrap(width = 12)  %>% 
+   linebreak(align = "c")
+
+tab.1 |>
+  kable(col.names = c(" ", colnames(tab.1)[2:5]), caption = "Occupation trajectories for Natives (columns) and Foreign Born workers (rows) from 2001 to 2023"
+         , escape = FALSE, format = "latex")|>
+  kable_classic()|>
+  kable_styling(latex_options = c("hold_position", "scale_down"))
+```
+
+
+Over the entire period, we see that `r percent(diagonal.tb1, accuracy = 0.1)` of occupations landed on the diagonal, `r percent(above.diag.tb1,accuracy = 0.1)` of occupations were above the diagonal, suggesting an immigrant advantage in trajectory and `r percent(below.diag.tb1,accuracy = 0.1)` of occupations were below the diagonal, suggesting a native advantage. 
+
+However, the trends change somewhat across periods. The percent of occupations in the diagonal between 2001 and 2006, was `r percent(diagonal_estimations[[1]]$diag, accuracy = 0.1)`. In 2007 to 2011 this number increased to `r percent(diagonal_estimations[[2]]$diag, accuracy = 0.1)`, further increasing between 2012 and 2019 to  `r percent(diagonal_estimations[[3]]$diag, accuracy = 0.1)` and declining in 2020 to 2023 at  `r percent(diagonal_estimations[[4]]$diag, accuracy = 0.1)`.
+
+
+The percent of occupations showing an immigrant advantage (above the diagonal) between 2001 and 2006, was `r percent(diagonal_estimations[[1]]$abv.diag, accuracy = 0.1)`, staying relatively constant between 2007 to 2011 at `r percent(diagonal_estimations[[2]]$abv.diag, accuracy = 0.1)`. But, during 2012 and 2019 the advantage declined to  `r percent(diagonal_estimations[[3]]$abv.diag, accuracy = 0.1)` of occupations yet spiking again during the later period  `r percent(diagonal_estimations[[4]]$abv.diag, accuracy = 0.1)`.
+
+
+
+```{r}
+
+colnames(tab.2_period_tables$`2001 - 2006`) <- colnames(tab.2_period_tables$`2001 - 2006`) %>%
+  str_wrap(width = 12)  %>% 
+   linebreak(align = "c")
+
+tab.2_period_tables$`2001 - 2006`|>
+  kable(col.names = c(" ", colnames(tab.2_period_tables$`2001 - 2006`)[2:5]), caption = "Occupation trajectories for Natives (col.) and Foreign Born workers (row) from 2001 to 2006"
+         , escape = FALSE, format = "latex")|>
+  kable_classic()|>
+   kable_styling(
+    latex_options = c("hold_position", "scale_down"), # Locks position & shrinks to fit
+    font_size = 10                                              # Global font size override
+  )
+
+
+colnames(tab.2_period_tables$`2007 - 2011`) <- colnames(tab.2_period_tables$`2007 - 2011`) %>%
+  str_wrap(width = 12)  %>% 
+   linebreak(align = "c")
+
+tab.2_period_tables$`2007 - 2011`|>
+  kable(col.names = c(" ", colnames(tab.2_period_tables$`2007 - 2011`)[2:5]), caption = "Occupation trajectories for Natives (col.) and Foreign Born workers (row) from 2007 to 2011"
+         , escape = FALSE, format = "latex")|>
+  kable_classic()|>
+  kable_styling(
+    latex_options = c("hold_position", "scale_down"), # Locks position & shrinks to fit
+    font_size = 10                                              # Global font size override
+  )
+
+
+
+colnames(tab.2_period_tables$`2012 - 2019`) <- colnames(tab.2_period_tables$`2012 - 2019`) %>%
+  str_wrap(width = 12)  %>% 
+   linebreak(align = "c")
+
+tab.2_period_tables$`2012 - 2019`|>
+  kable(col.names = c(" ", colnames(tab.2_period_tables$`2012 - 2019`)[2:5]), caption = "Occupation trajectories for Natives (col.) and Foreign Born workers (row) from 2012 to 2019"
+         , escape = FALSE, format = "latex")|>
+  kable_classic()|>
+   kable_styling(
+    latex_options = c("hold_position", "scale_down"), # Locks position & shrinks to fit
+    font_size = 10                                              # Global font size override
+  )
+
+
+
+colnames(tab.2_period_tables$`2020 - 2023`) <- colnames(tab.2_period_tables$`2020 - 2023`) %>%
+  str_wrap(width = 12)  %>% 
+   linebreak(align = "c")
+
+tab.2_period_tables$`2020 - 2023`|>
+  kable(col.names = c(" ", colnames(tab.2_period_tables$`2020 - 2023`)[2:5]), caption = "Occupation trajectories for Natives (col.) and Foreign Born workers (row) from 2020 to 2023"
+         , escape = FALSE, format = "latex")|>
+  kable_classic()|>
+   kable_styling(
+    latex_options = c("hold_position", "scale_down"), # Locks position & shrinks to fit
+    font_size = 10                                              # Global font size override
+  )
+```
+
+
+
+Last, we want to show the trends by occupation in the  plots we discussed in March. Each point on the plot is an occupation, and coordinates mark the magnitude of the component for natives on the x-axis and foreign born workers on the y-axis. A slope of 1 means that that occupations are growing/shrinking (Delta plots),  workers are entering/leaving (Component 1 plots), or wages are rising/dropping (Component 2 plots) at the same rate across nativity groups. 
+
+\newpage
+\begin{landscape}
+
+
+```{r fig.width=11, fig.height=8.5, out.width="100%", echo=FALSE}
+period_5_bubble_graphs$delta_all+
+ scale_y_continuous(limits = c(-1200, 2800)  , labels = scales::dollar_format())+
+ scale_x_continuous(limits = c(-1200, 2800) , labels = scales::dollar_format())+
+ theme_classic()+
+ labs(title = "Delta plot: 2001 - 2023 Overall dollar gains in average wage by nativity status")
+
+```
+
+
+
+
+```{r fig.width=11, fig.height=8.5, out.width="100%", echo=FALSE}
+period_1_bubble_graphs$delta_all+
+ scale_y_continuous(limits = c(-600, 600)  , labels = scales::dollar_format())+
+ scale_x_continuous(limits = c(-600, 600) , labels = scales::dollar_format())+
+ theme_classic()+
+ labs(title = "Delta plot: 2001 - 2006 Overall dollar gains in average wage by nativity status")
+
+```
+
+
+
+
+
+```{r fig.width=11, fig.height=8.5, out.width="100%", echo=FALSE}
+period_2_bubble_graphs$delta_all+
+ scale_y_continuous(limits = c(-600, 600)  , labels = scales::dollar_format())+
+ scale_x_continuous(limits = c(-600, 600) , labels = scales::dollar_format())+
+ theme_classic()+
+ labs(title = "Delta plot: 2007 - 2011 Overall dollar gains in average wage by nativity status")
+
+```
+
+
+
+
+```{r fig.width=11, fig.height=8.5, out.width="100%", echo=FALSE}
+period_3_bubble_graphs$delta_all+
+ scale_y_continuous(limits = c(-600, 600)  , labels = scales::dollar_format())+
+ scale_x_continuous(limits = c(-600, 600) , labels = scales::dollar_format())+
+ theme_classic()+
+ labs(title = "Delta plot: 2012 - 2019 Overall dollar gains in average wage by nativity status")
+
+```
+
+
+
+
+
+```{r fig.width=11, fig.height=8.5, out.width="100%", echo=FALSE}
+period_4_bubble_graphs$delta_all+
+ scale_y_continuous(limits = c(-600, 600)  , labels = scales::dollar_format())+
+ scale_x_continuous(limits = c(-600, 600) , labels = scales::dollar_format())+
+ theme_classic()+
+ labs(title = "Delta plot: 2020 - 2023 Overall dollar gains in average wage by nativity status")
+
+```
+
+\end{landscape}
+\newpage
+
+\begin{landscape}
+
+The plots that follow look at changes in occupational segregation (the largest component of change). I also made ones for the wage component, but they are less interesting. 
+
+```{r fig.width=11, fig.height=8.5, out.width="100%", echo=FALSE}
+period_5_bubble_graphs$C1_all+
+ scale_y_continuous(limits = c(-1200, 2800)  , labels = scales::dollar_format())+
+ scale_x_continuous(limits = c(-1200, 2800) , labels = scales::dollar_format())+
+ theme_classic()+
+ labs(title = "Occupational reallocation (C1) plot: 2001 - 2023 Overall dollar gains in average wage by nativity status")
+
+```
+
+
+
+
+```{r fig.width=11, fig.height=8.5, out.width="100%", echo=FALSE}
+period_1_bubble_graphs$C1_all+
+ scale_y_continuous(limits = c(-600, 600)  , labels = scales::dollar_format())+
+ scale_x_continuous(limits = c(-600, 600) , labels = scales::dollar_format())+
+ theme_classic()+
+ labs(title = "Occupational reallocation (C1) plot: 2001 - 2006 Overall dollar gains in average wage by nativity status")
+
+```
+
+
+
+
+```{r fig.width=11, fig.height=8.5, out.width="100%", echo=FALSE}
+period_2_bubble_graphs$C1_all+
+ scale_y_continuous(limits = c(-600, 600)  , labels = scales::dollar_format())+
+ scale_x_continuous(limits = c(-600, 600) , labels = scales::dollar_format())+
+ theme_classic()+
+ labs(title = "Occupational reallocation (C1) plot: 2007 - 2011 Overall dollar gains in average wage by nativity status")
+
+```
+
+
+
+
+```{r fig.width=11, fig.height=8.5, out.width="100%", echo=FALSE}
+period_3_bubble_graphs$C1_all+
+ scale_y_continuous(limits = c(-600, 600)  , labels = scales::dollar_format())+
+ scale_x_continuous(limits = c(-600, 600) , labels = scales::dollar_format())+
+ theme_classic()+
+ labs(title = "Occupational reallocation (C1) plot: 2012 - 2019 Overall dollar gains in average wage by nativity status")
+
+```
+
+
+
+
+
+
+```{r fig.width=11, fig.height=8.5, out.width="100%", echo=FALSE}
+period_4_bubble_graphs$C1_all+
+ scale_y_continuous(limits = c(-600, 600)  , labels = scales::dollar_format())+
+ scale_x_continuous(limits = c(-600, 600) , labels = scales::dollar_format())+
+ theme_classic()+
+ labs(title = "Occupational reallocation (C1) plot: 2020 - 2023 Overall dollar gains in average wage by nativity status")
+
+```
+
+\end{landscape}
+
+
